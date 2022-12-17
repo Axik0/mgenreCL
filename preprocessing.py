@@ -24,6 +24,7 @@ NG_PATH = r"C:\Users\ks\Desktop\postpunk"
 DS_PATH = r"C:\Users\ks\Downloads\Data\genres_original"
 RES_PATH = 'extr_data.json'
 
+# this script requires ffmpeg.exe decoder app in a root folder
 
 @timer
 def split_raw_files(input_path, block_size):
