@@ -4,6 +4,8 @@ import audioread.ffdec
 import soundfile as sf
 import math
 import json
+import librosa.display
+import matplotlib.pyplot as plt
 
 import time
 
@@ -14,6 +16,14 @@ def timer(func):
         func(*args, **kwargs)
         print(f"Time passed: {round(time.perf_counter()-tic, 2)}s")
     return wrapper
+
+
+def show_mfcc(mfcc, sr, hop_length=512):
+    librosa.display.specshow(mfcc, sr=sr, hop_length=hop_length)
+    plt.xlabel('Time')
+    plt.ylabel('MFCCs')
+    plt.colorbar()
+    plt.show()
 
 
 SR = 22050
@@ -85,6 +95,7 @@ def gen_mfcc(dataset_path, result_path, n_mfcc=13, n_fft=2048, hop_length=512, n
                                                     n_mfcc=n_mfcc)
                         # each mfcc is a matrix, i.e. numpy 2d array of size n_mfcc(13) * #samples of fft for segment
                         # print(mfcc.shape, ns_p_segment/hop_length)
+                        # show_mfcc(mfcc, sr, hop_length)
                         # if we have enough mfccs for that segment, use (store) it
                         if mfcc.shape[1] == lim_nmfcc_p_segment:
                             # we want each mfcc vector to be a row instead of column
