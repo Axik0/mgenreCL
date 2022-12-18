@@ -72,16 +72,16 @@ if __name__ == "__main__":
     model = build_model(input_shape)
     model.summary()
 
-    optimizer = tf.keras.optimizers.Adam(learning_rate=0.0001)
+    optimizer = tf.keras.optimizers.Adam(learning_rate=0.001)
     model.compile(optimizer=optimizer, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
     model.fit(X_train, y_train, validation_data=(X_validation, y_validation), batch_size=32, epochs=30)
 
     loss, acc = model.evaluate(X_test, y_test, verbose=1)
     print(f"Accuracy on test set: {acc}")
 
-    # model.save('models/LSTMTF')
-    # checkpoint_model = tf.keras.models.load_model('models/LSTMTF')
-    # checkpoint_model.fit(X_validation, y_validation, validation_data=(X_test, y_test), batch_size=32, epochs=30)
+    model.save('models/LSTMTF')
+    checkpoint_model = tf.keras.models.load_model('models/LSTMTF')
+    checkpoint_model.fit(X_validation, y_validation, validation_data=(X_test, y_test), batch_size=32, epochs=10)
 
     # X, y = X_test[33], y_test[33]
     # predict(model, X, y)
