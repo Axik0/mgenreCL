@@ -1,6 +1,3 @@
-# TODO build network architecture and compile
-# TODO train network
-
 import json
 import numpy as np
 from sklearn.model_selection import train_test_split
@@ -49,7 +46,7 @@ def build_model(input_shape):
     model = tf.keras.Sequential()
     # feature generation layers
     # Batch normalization for faster convergence
-    model.add(tf.keras.layers.Conv2D(32, (4, 4), activation='relu', input_shape=input_shape))
+    model.add(tf.keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=input_shape))
     model.add(tf.keras.layers.MaxPool2D((3, 3), strides=(2, 2), padding='same'))
     model.add(tf.keras.layers.BatchNormalization())
 
@@ -93,8 +90,12 @@ if __name__ == "__main__":
     model.compile(optimizer=optimizer, loss='sparse_categorical_crossentropy', metrics=['accuracy'])
     model.fit(X_train, y_train, validation_data=(X_validation, y_validation), batch_size=32, epochs=30)
 
-    test_error, test_accuracy = model.evaluate(X_test, y_test, verbose=1)
-    print(f"Accuracy on test set: {test_accuracy}")
+    loss, acc = model.evaluate(X_test, y_test, verbose=1)
+    print(f"Accuracy on test set: {acc}")
 
-    X, y = X_test[33], y_test[33]
-    predict(model, X, y)
+    # model.save('models/CCNNTF')
+    # checkpoint_model = tf.keras.models.load_model('models/CCNNTF')
+    # checkpoint_model.fit(X_validation, y_validation, validation_data=(X_test, y_test), batch_size=32, epochs=30)
+
+    # X, y = X_test[33], y_test[33]
+    # predict(model, X, y)
