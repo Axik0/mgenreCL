@@ -2,12 +2,14 @@ import os
 import librosa
 import audioread.ffdec
 import soundfile as sf
-import math
-import json
+
 import librosa.display
 import matplotlib.pyplot as plt
-
+import math
+import json
 import time
+
+# this script requires ffmpeg.exe decoder app in a root folder
 
 
 def timer(func):
@@ -33,8 +35,6 @@ SAMPLES_TOTAL = SR * DURATION
 NG_PATH = r"C:\Users\ks\Desktop\postpunk"
 DS_PATH = r"C:\Users\ks\Downloads\Data\genres_original"
 RES_PATH = 'extr_data.json'
-
-# this script requires ffmpeg.exe decoder app in a root folder
 
 @timer
 def split_raw_files(input_path, block_size):
@@ -66,8 +66,8 @@ def split_raw_files(input_path, block_size):
 @timer
 def gen_mfcc(dataset_path, result_path, n_mfcc=13, n_fft=2048, hop_length=512, n_segments=5):
     """loop through all folders and files, get genres as folder names,
-    then get all files, split and generate mfcc for each segment"""
-    data = {'genres': [], 'mfcc': [], }
+    then get all files, split and generate (same amount of) mfccs for each segment"""
+    data = {'genres': [], 'mfcc': [], 'labels': [], }
     # each segment must obtain exact and equal quantity of mfcc vectors:
     ns_p_segment = int(SAMPLES_TOTAL/n_segments)
     lim_nmfcc_p_segment = math.ceil(ns_p_segment / hop_length)
@@ -81,7 +81,7 @@ def gen_mfcc(dataset_path, result_path, n_mfcc=13, n_fft=2048, hop_length=512, n
             data['genres'].append(genre)
             print(f"Processing {len(fn)} samples of {genre}")
             # for each audio file in this folder (fn = list of all filenames), open it and split onto n_segments
-            for f in fn[:2]:
+            for f in fn:
                 restored_fp = os.path.join(dp, f)
                 with audioread.audio_open(restored_fp) as m:
                     signal, sr = librosa.load(m, sr=SR)
@@ -101,8 +101,9 @@ def gen_mfcc(dataset_path, result_path, n_mfcc=13, n_fft=2048, hop_length=512, n
                             # we want each mfcc vector to be a row instead of column
                             mfcc = mfcc.T
                             data['mfcc'].append(mfcc.tolist())
+                            # label by index for this segment, it's convenient to have a separate list of those
+                            data['labels'].append(i - 1)
                             # retrieves python list of lists (mfcc vectors) here
-                            # data['labels'].append(i - 1)
                             print(f"{f}, segment:{s + 1}")
     # save results, uses json module for convenient data serialization
     with open(result_path, 'w') as rp:
@@ -112,3 +113,4 @@ def gen_mfcc(dataset_path, result_path, n_mfcc=13, n_fft=2048, hop_length=512, n
 if __name__ == "__main__":
     # split_raw_files(NG_PATH, DURATION)
     gen_mfcc(DS_PATH, RES_PATH)
+    # nobackend error here means broken file, the code is still valid
